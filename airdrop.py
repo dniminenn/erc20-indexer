@@ -58,9 +58,13 @@ def set_last_run(timestamp):
 def get_abi(chain_id, contract_address):
     path = f'abi/{chain_id}_{contract_address}.abi.json'
     if os.path.isfile(path):
+        print("ABI found, using custom ABI")
         with open(path, 'r') as file:
             return json.load(file)
     else:
+        print("ABI not found, using default ERC20 ABI\n"
+            "If you want to use a custom ABI, create a file in the abi folder "
+            f"with the name {chain_id}_{contract_address}.abi.json")
         with open('erc20.abi.json', 'r') as file:
             return json.load(file)
     
