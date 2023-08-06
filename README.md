@@ -71,19 +71,42 @@ The airdrop tool is designed to be run regularly, for example by creating a syst
 
 #### Example systemd service file:
 
+/etc/systemd/system/evm-airdrop.service
 ```ini
 [Unit]
 Description=Ethereum Airdrop Service
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/path/to/venv/bin/python /path/to/airdrop.py
-Restart=on-failure
 User=your_username
 WorkingDirectory=/path/to/project/directory
 Environment="PATH=/path/to/venv/bin"
-RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
+```
+
+/etc/systemd/system/evm-airdrop.timer
+```ini
+[Unit]
+Description=Run Ethereum Airdrop Service at a random time every three days
+
+[Timer]
+OnCalendar=*-*-* 0/3:00:00
+RandomizedDelaySec=24h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+Then run the following command to enable the timer
+```bash
+systemctl enable evm-airdrop.timer
+```
+
+Depending on your environment you may opt for a cronjob instead, here's an example crontab entry
+```ini
+0 0 */3 * * /path/to/venv/bin/python /path/to/airdrop.py >> /path/to/logfile.log 2>&1
 ```
