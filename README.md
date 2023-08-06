@@ -106,6 +106,11 @@ Then run the following command to enable the timer
 systemctl enable evm-airdrop.timer
 ```
 
+Or, to perform a single run and then exit
+```bash
+systemctl start evm-airdrop.service
+```
+
 ### Alternative: Unix Cronjob
 Depending on your environment you may opt for a cronjob instead, here's an example crontab entry
 ```ini
