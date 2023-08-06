@@ -2,6 +2,7 @@ from database import init_db, Event, Contract, Chain
 from collections import defaultdict
 from tqdm import tqdm
 import csv
+import os
 
 def check_snapshot_file(chain_id, contract_address, snapshot_type, start_block, end_block=None):
     filename = f'snapshots/{chain_id}/{contract_address}/{snapshot_type}_snapshot_{start_block}'
@@ -59,10 +60,17 @@ def get_chain_and_contract():
 
 
 def write_to_csv(chain_id, contract_address, balances, snapshot_type, start_block, end_block=None):
+    if not os.path.exists(f'snapshots/{chain_id}/{contract_address}'):
+        os.makedirs(f'snapshots/{chain_id}/{contract_address}')
+    
     filename = f'snapshots/{chain_id}/{contract_address}/{snapshot_type}_snapshot_{start_block}'
     if end_block:
         filename += f'_{end_block}'
     filename += '.csv'
+
+    if os.path.exists(filename):
+        print("Snapshot file already exists. Not overwriting...")
+        return
 
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -183,6 +191,6 @@ if __name__ == "__main__":
         if(end_block > contract.last_processed_block):
             end_block = contract.last_processed_block
         balances = create_average_snapshot(chain_id=chain.id, contract_address=contract.address, start_block=start_block, end_block=end_block)
-        write_to_csv(balances, 'average', start_block, end_block)
+        write_to_csv(chain.id, contract.address, balances, 'average', start_block, end_block)
     else:
         print("Invalid choice. Please enter 'S' for single snapshot or 'A' for average snapshot.")
