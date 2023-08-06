@@ -1,6 +1,15 @@
 # ERC20 Indexer, Snapshot and Airdrop tools
 
-This project includes a tool for indexing ERC20 Transfers, creating snapshots of token balances, and performing airdrops. 
+This project includes a tool for indexing ERC20 Transfers, creating snapshots of token balances, and performing airdrops.
+
+### Indexer
+A tool that retrieves ERC20 transfer events from a variety of EVM-based chains and contracts. The fetched data is kept in an SQLite database for subsequent use or scrutiny.
+
+### Snapshot Tool
+A versatile tool that can generate two types of snapshots - single and average. The single snapshot represents the token balances at a specific block height. In contrast, the average snapshot reflects the average state of the integral of token balances across a range of blocks, serving as a temporal representation rather than a single point. This feature eliminates the potential for gaming the snapshot by choosing a particular block.
+
+### Airdrop Tool
+A component that uses the snapshots produced by the Snapshot Tool to execute token airdrops. It allows for distribution of tokens to the non-excluded addresses recorded in the snapshot data, creating a convenient method for rewarding token ecosystem participants.
 
 ## Setup
 
