@@ -20,7 +20,7 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Edit `config.yml` with the required details for your EVM chains and contracts.
+Edit `config.yml` with the required details for your EVM chains and contracts. You may need to set the chunk size according to your node provider's API documentation.
 
 If you want to use the airdrop tool, you'll need to provide some environment variables. Copy `env.example` to `.env` and fill in the details.
 
