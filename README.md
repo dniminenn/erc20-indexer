@@ -6,9 +6,16 @@ This project includes a tool for indexing ERC20 Transfers, creating snapshots of
 
 ### Dependencies
 
-First, setup a virtual environment:
+First, clone the repository:
 
 ```bash
+git clone https://github.com/dniminenn/erc20-indexer
+```
+
+Then, setup a virtual environment:
+
+```bash
+cd erc20-indexer
 python -m venv venv
 source venv/bin/activate
 ```
@@ -34,13 +41,17 @@ Remember to activate the venv before calling any of the tools.
 python indexer.py
 ```
 
-#### To create a snapshot:
+The indexer will populate an sqlite database with the Transfer events of the configured contracts.
+
+#### Create a snapshot
 
 ```bash
 python snapshot.py
 ```
 
-#### To perform an airdrop:
+The snapshot will be saved in `csv` format under the `snapshots` directory.
+
+#### Perform an airdrop
 ```bash
 python airdrop.py
 ```
