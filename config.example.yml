@@ -1,0 +1,39 @@
+chains:
+  - id: 250
+    name: "Fantom"
+    rpc_url: "http://alchemyapi.io/v2/YourAlchemyKey"
+    chunk_size: 5000
+    contracts:
+      - name: "JAR"
+        address: "0x432d6c708e8a0c3a86e8d6b759d6c9c1b53f5f6f"
+        startblock: 64242726
+        excluded_addresses: [
+          "0x0d8CD4191b92C1eb373Ae7Eac3696A00748410F2",
+          "0x7089d775c2ec3feBFBd86e8bd96209Cbe258780c"
+        ]
+      - name: "stJAR"
+        address: "0x32f4fde6c3e2fca6bc2c1b02c0f5b7b8d9d6c732"
+        startblock: 64242726
+        excluded_addresses: [
+          "0x0d8CD4191b92C1eb373Ae7Eac3696A00748410F3",
+          "0x7089d775c2ec3feBFBd86e8bd96209Cbe258780d"
+        ]
+  - id: 1
+    name: "Ethereum"
+    rpc_url: "http://infura.io/v3/YourInfuraKey"
+    chunk_size: 5000
+    contracts:
+      - name: "PIMP"
+        address: "0xd8b712b0d4f5cb5ebbf0f7a1e5f0d0c3d1f92b1f"
+        startblock: 64242722
+        excluded_addresses: [
+          "0x0d8CD4191b92C1eb373Ae7Eac3696A00748410F4",
+          "0x7089d775c2ec3feBFBd86e8bd96209Cbe258780e"
+        ]
+      - name: "stPIMP"
+        address: "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        startblock: 64242750
+        excluded_addresses: [
+          "0x0d8CD4191b92C1eb373Ae7Eac3696A00748410F8",
+          "0x7089d775c2ec3feBFBd86e8bd96209Cbe258780a"
+        ]
