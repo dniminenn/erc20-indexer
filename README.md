@@ -47,7 +47,7 @@ python airdrop.py
 
 ## Running regularly
 
-The airdrop tool is designed to be run regularly, for example by creating a systemd service.
+The airdrop tool is designed to be run regularly, for example by creating a systemd service. Running `airdrop.py` will update the indexes, perform the snapshot and run the airdrop. Failed transactions are saved into a log file and are retried on the next run.
 
 #### Example systemd service file:
 
