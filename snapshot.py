@@ -3,8 +3,8 @@ from collections import defaultdict
 from tqdm import tqdm
 import csv
 
-def check_snapshot_file(snapshot_type, start_block, end_block=None):
-    filename = f'snapshots/{snapshot_type}_snapshot_{start_block}'
+def check_snapshot_file(chain_id, contract_address, snapshot_type, start_block, end_block=None):
+    filename = f'snapshots/{chain_id}/{contract_address}/{snapshot_type}_snapshot_{start_block}'
     if end_block:
         filename += f'_{end_block}'
     filename += '.csv'
@@ -16,8 +16,8 @@ def check_snapshot_file(snapshot_type, start_block, end_block=None):
         return False
 
 
-def read_snapshot_file(snapshot_type, start_block, end_block=None):
-    filename = f'snapshots/{snapshot_type}_snapshot_{start_block}'
+def read_snapshot_file(chain_id, contract_address, snapshot_type, start_block, end_block=None):
+    filename = f'snapshots/{chain_id}/{contract_address}/{snapshot_type}_snapshot_{start_block}'
     if end_block:
         filename += f'_{end_block}'
     filename += '.csv'
@@ -58,8 +58,8 @@ def get_chain_and_contract():
     return chain, contract
 
 
-def write_to_csv(balances, snapshot_type, start_block, end_block=None):
-    filename = f'snapshots/{snapshot_type}_snapshot_{start_block}'
+def write_to_csv(chain_id, contract_address, balances, snapshot_type, start_block, end_block=None):
+    filename = f'snapshots/{chain_id}/{contract_address}/{snapshot_type}_snapshot_{start_block}'
     if end_block:
         filename += f'_{end_block}'
     filename += '.csv'
@@ -98,8 +98,8 @@ def create_snapshot(chain_id, contract_address, block_height, db_session):
 
 
 def create_single_snapshot(chain_id, contract_address, block_height):
-    if check_snapshot_file('single', block_height):
-        return read_snapshot_file('single', block_height)
+    if check_snapshot_file(chain_id, contract_address, 'single', block_height):
+        return read_snapshot_file(chain_id, contract_address, 'single', block_height)
     else:
         Session = init_db()
         session = Session()
@@ -114,8 +114,8 @@ def create_single_snapshot(chain_id, contract_address, block_height):
 
 
 def create_average_snapshot(chain_id, contract_address, start_block, end_block):
-    if check_snapshot_file('average', start_block, end_block):
-        return read_snapshot_file('average', start_block, end_block)
+    if check_snapshot_file(chain_id, contract_address,'average', start_block, end_block):
+        return read_snapshot_file(chain_id, contract_address,'average', start_block, end_block)
     else:
         Session = init_db()
         session = Session()
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         block_height = int(input(f"\nEnter the block height for the single snapshot (current: {contract.last_processed_block}): "))
         # Create the single snapshot
         balances = create_single_snapshot(chain_id=chain.id, contract_address=contract.address, block_height=block_height)
-        write_to_csv(balances, 'single', block_height)
+        write_to_csv(chain.id, contract.address, 'single', block_height)
     elif snapshot_choice == 'A':
         start_block = int(input(f"\nEnter the start block height for the average snapshot (current: {contract.last_processed_block}): "))
         end_block = int(input(f"Enter the end block height for the average snapshot (current: {contract.last_processed_block}): "))
