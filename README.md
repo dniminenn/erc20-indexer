@@ -69,7 +69,7 @@ python airdrop.py
 
 The airdrop tool is designed to be run regularly, for example by creating a systemd service. Running `airdrop.py` will update the indexes, perform the snapshot and run the airdrop. Failed transactions are saved into a log file and are retried on the next run.
 
-#### Example systemd service file:
+#### Example systemd service and corresponding timer
 
 /etc/systemd/system/evm-airdrop.service
 ```ini
@@ -106,6 +106,7 @@ Then run the following command to enable the timer
 systemctl enable evm-airdrop.timer
 ```
 
+#### Alternative: Unix Cronjob
 Depending on your environment you may opt for a cronjob instead, here's an example crontab entry
 ```ini
 0 0 */3 * * /path/to/venv/bin/python /path/to/airdrop.py >> /path/to/logfile.log 2>&1
