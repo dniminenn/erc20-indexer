@@ -18,5 +18,5 @@ def get_rpc(chain_id):
     cfg = load_config()
     for chain in cfg['chains']:
         if chain['id'] == chain_id:
-            return chain['rpc']
+            return chain['rpc_url']
     return None

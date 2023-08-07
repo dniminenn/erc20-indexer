@@ -107,6 +107,7 @@ def create_snapshot(chain_id, contract_address, block_height, db_session):
 
 def create_single_snapshot(chain_id, contract_address, block_height):
     if check_snapshot_file(chain_id, contract_address, 'single', block_height):
+        print("Snapshot already exists. Reading from file...")
         return read_snapshot_file(chain_id, contract_address, 'single', block_height)
     else:
         Session = init_db()
@@ -123,6 +124,7 @@ def create_single_snapshot(chain_id, contract_address, block_height):
 
 def create_average_snapshot(chain_id, contract_address, start_block, end_block):
     if check_snapshot_file(chain_id, contract_address,'average', start_block, end_block):
+        print("Snapshot already exists. Reading from file...")
         return read_snapshot_file(chain_id, contract_address,'average', start_block, end_block)
     else:
         Session = init_db()
@@ -182,7 +184,7 @@ if __name__ == "__main__":
         block_height = int(input(f"\nEnter the block height for the single snapshot (current: {contract.last_processed_block}): "))
         # Create the single snapshot
         balances = create_single_snapshot(chain_id=chain.id, contract_address=contract.address, block_height=block_height)
-        write_to_csv(chain.id, contract.address, 'single', block_height)
+        write_to_csv(chain.id, contract.address, balances, 'single', block_height)
     elif snapshot_choice == 'A':
         start_block = int(input(f"\nEnter the start block height for the average snapshot (current: {contract.last_processed_block}): "))
         end_block = int(input(f"Enter the end block height for the average snapshot (current: {contract.last_processed_block}): "))

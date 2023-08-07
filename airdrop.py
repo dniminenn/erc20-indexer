@@ -8,6 +8,7 @@ from config import load_config, get_excluded_address, get_rpc
 import os
 import asyncio
 import dotenv
+import uuid
 
 cfg = load_config()
 dotenv.load_dotenv()
@@ -16,7 +17,7 @@ dotenv.load_dotenv()
 CHUNK_SIZE = 100
 SCHEDULE_INTERVAL = 604800
 MAX_RETRIES = 5
-TAX_WALLET_ADDRESS = os.getenv('TAX_WALLET_ADDRESS')  # Address of the tax wallet
+TAX_WALLET_ADDRESS = Web3.to_checksum_address(os.getenv('TAX_WALLET_ADDRESS'))  # Address of the tax wallet
 TAX_WALLET_PRIVATE_KEY = os.getenv('TAX_WALLET_PRIVATE_KEY')  # Private key of the tax wallet
 
 LAST_AIRDROPPED_BLOCKS_FILE = 'last_airdropped_blocks.json'
@@ -45,9 +46,9 @@ def set_last_airdropped_block(chain_id, contract_address, block_number):
 def get_last_run():
     if os.path.isfile('last_run.txt'):
         with open('last_run.txt', 'r') as file:
-            return int(file.read())
+            return float(file.read())
     else:
-        return 0
+        return 0.0
 
 
 def set_last_run(timestamp): 
@@ -91,6 +92,7 @@ def eligible_balance_for_airdrop(chain_id, contract_address):
 
     # Get the balance of the wallet
     current_balance = contract.functions.balanceOf(TAX_WALLET_ADDRESS).call()
+    print(f'Current balance of the wallet: {current_balance}')
 
     transactions_file = f'{contract_address}_{chain_id}_transactions.json'
     failed_sum = 0
@@ -112,9 +114,10 @@ def distribute_airdrop(chain_id, contract_address, snapshot):
     abi = get_abi(chain_id, contract_address)
     rpc = get_rpc(chain_id)
     w3 = Web3(HTTPProvider(rpc))
-    w3.middleware_onion.inject(geth_poa_middleware, layer=0)    
+    w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+    w3.eth.default_account = TAX_WALLET_ADDRESS    
     contract = w3.eth.contract(address=contract_address, abi=abi)
-    nonce = w3.eth.get_transactionCount(TAX_WALLET_ADDRESS)
+    nonce = w3.eth.get_transaction_count(TAX_WALLET_ADDRESS)
     snapshot_total = sum(snapshot.values())
     wallet_balance = eligible_balance_for_airdrop(chain_id, contract_address)
 
@@ -130,21 +133,27 @@ def distribute_airdrop(chain_id, contract_address, snapshot):
     else:
         transactions_log = {}
 
+    print(f'Found {len(addresses)} addresses to send to')
     while addresses:
+        print(f'Current nonce: {nonce}')
         chunk_addresses = addresses[:CHUNK_SIZE]
         chunk_balances = balances[:CHUNK_SIZE]
 
         addresses = addresses[CHUNK_SIZE:]
         balances = balances[CHUNK_SIZE:]
 
+        print("Building transaction...")
         txn = contract.functions.airdrop(chunk_addresses, chunk_balances).build_transaction({
             'chainId': chain_id,
             'gasPrice': w3.eth.gas_price,
             'nonce': nonce,
         })
 
+
         txn['gas'] = w3.eth.estimate_gas(txn)
-        signed_txn = w3.eth.account.sign_transaction(txn, PRIVATE_KEY)
+        print("Signing transaction...")
+        signed_txn = w3.eth.account.sign_transaction(txn, TAX_WALLET_PRIVATE_KEY)
+        print("Signed transaction!")
         print(f'Sending to {len(chunk_addresses)} addresses...')
         
         # Generate a unique ID for this transaction
@@ -158,7 +167,7 @@ def distribute_airdrop(chain_id, contract_address, snapshot):
         }
         
         try:
-            txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+            txn_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
             transactions_log[txn_id]['transaction_hash'] = txn_hash.hex()
             
             receipt = w3.eth.wait_for_transaction_receipt(txn_hash)
@@ -169,6 +178,7 @@ def distribute_airdrop(chain_id, contract_address, snapshot):
                 transactions_log[txn_id]['status'] = 'failed'
                 continue
             else:
+                print("Transaction successful!")
                 transactions_log[txn_id]['status'] = 'success'
 
         except Exception as e:
