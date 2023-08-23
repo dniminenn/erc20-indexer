@@ -107,6 +107,7 @@ def eligible_balance_for_airdrop(chain_id, contract_address):
                 failed_sum += sum(txn_info['balances'])
 
     # Return the balance eligible for airdrop
+    print(f'Balance eligible for airdrop: {current_balance - failed_sum}')
     return current_balance - failed_sum
 
 
@@ -121,6 +122,7 @@ def distribute_airdrop(chain_id, contract_address, snapshot):
     snapshot_total = sum(snapshot.values())
     wallet_balance = eligible_balance_for_airdrop(chain_id, contract_address)
 
+    
     addresses = list(snapshot.keys())
     balances = [int(snapshot[address] / snapshot_total * wallet_balance) for address in addresses]
 
